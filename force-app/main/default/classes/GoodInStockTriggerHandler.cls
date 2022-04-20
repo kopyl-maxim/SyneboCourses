@@ -1,5 +1,5 @@
 public with sharing class GoodInStockTriggerHandler {
-    public GoodInStockHandler() {
+    public GoodInStockTriggerHandler() {
 
     }
     public static void updateConsigmentNoteDate (List<Goods_in_stock__c> newList, Map<Id, Goods_in_stock__c> oldMap ){
