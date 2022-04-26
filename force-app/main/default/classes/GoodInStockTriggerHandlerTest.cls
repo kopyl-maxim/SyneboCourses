@@ -1,125 +1,216 @@
 @isTest
 public with sharing class GoodInStockTriggerHandlerTest {
-
-    @TestSetup
-    static void makeData(){
-        ProductType__c pt = new ProductType__c(Name='test Name');
-        insert pt;
-
-        Goods_in_stock__c gis = new Goods_in_stock__c(Price__c='2', Date__c=date.newinstance(2022, 02, 22), Name='Test Product', ProductNumber__c='1', ProductType__c=pt.id, QuntityOfGoods__c='test');
-        insert gis;
-
-        Position__c posi = new Position__c(Name='test Position');
-        insert posi;
-
-        Employee__c empl = new Employee__c(Name='Test Employee', Position__c=posi.id);
-        insert empl;
-
-    }
+  @TestSetup
+  static void makeData() {
+    ProductType__c pt = new ProductType__c(Name = 'test Name');
     
-    @isTest
-    public static void goodInStockAfterInsertTest() {
-        Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
-        Goods_in_stock__c gis = [SELECT id FROM Goods_in_stock__c LIMIT 1];
+    insert pt;
 
-        Test.startTest();
-        
-        Consignment_note__c cn1 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test1 ConsigmentNote');
+    Goods_in_stock__c gis = new Goods_in_stock__c(
+      Price__c = '2',
+      Date__c = date.newinstance(2022, 2, 22),
+      Name = 'Test Product',
+      ProductNumber__c = '1',
+      ProductType__c = pt.id,
+      QuntityOfGoods__c = 'test'
+    );
 
-        Consignment_note__c cn2 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test2 ConsigmentNote');
+    insert gis;
 
-        Consignment_note__c cn3 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test3 ConsigmentNote');
-        insert new List<Consignment_note__c>{cn1, cn2, cn3};
+    Position__c posi = new Position__c(Name = 'test Position');
 
-        Test.stopTest();
+    insert posi;
 
-        Goods_in_stock__c goodInStockTest = [SELECT id, Count_of_childs__c FROM Goods_in_stock__c LIMIT 1];
+    Employee__c empl = new Employee__c(
+      Name = 'Test Employee',
+      Position__c = posi.id
+    );
 
-        System.assert(goodInStockTest.Count_of_childs__c == 3);
-    }
+    insert empl;
+  }
 
-    @isTest
-    public static void goodInStockAfterUpdateTest() {
-        Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
-        Goods_in_stock__c gis1 = [SELECT id, ProductType__c FROM Goods_in_stock__c LIMIT 1];
+  @isTest
+  public static void goodInStockAfterInsertTest() {
+    Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
+    Goods_in_stock__c gis = [SELECT id FROM Goods_in_stock__c LIMIT 1];
 
-        Goods_in_stock__c gis2 = new Goods_in_stock__c(Price__c='2', Name='Test Prot', ProductNumber__c='1', ProductType__c=gis1.ProductType__c, QuntityOfGoods__c='test2');
-        insert gis2;
+    Test.startTest();
 
-        Test.startTest();
-        
-        Consignment_note__c cn1 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis1.id, Name='test1 ConsigmentNote');
+    Consignment_note__c cn1 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test1 ConsigmentNote'
+    );
 
-        Consignment_note__c cn2 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis1.id, Name='test2 ConsigmentNote');
+    Consignment_note__c cn2 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test2 ConsigmentNote'
+    );
 
-        Consignment_note__c cn3 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis1.id, Name='test3 ConsigmentNote');
+    Consignment_note__c cn3 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test3 ConsigmentNote'
+    );
 
-        List<Consignment_note__c> consNotList = new List<Consignment_note__c>();
+    insert new List<Consignment_note__c>{ cn1, cn2, cn3 };
 
-        consNotList.add(cn1);
-        consNotList.add(cn2);
-        consNotList.add(cn3);
+    Test.stopTest();
 
-        insert consNotList;
+    Goods_in_stock__c goodInStockTest = [
+      SELECT id, Count_of_childs__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
 
-        consNotList[0].Goods_in_stock__c = null;
+    System.assert(goodInStockTest.Count_of_childs__c == 3);
+  }
 
-        update consNotList[0];
+  @isTest
+  public static void goodInStockAfterUpdateTest() {
+    Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
+    Goods_in_stock__c gis1 = [
+      SELECT id, ProductType__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
 
-        Test.stopTest();
+    Goods_in_stock__c gis2 = new Goods_in_stock__c(
+      Price__c = '2',
+      Name = 'Test Prot',
+      ProductNumber__c = '1',
+      ProductType__c = gis1.ProductType__c,
+      QuntityOfGoods__c = 'test2'
+    );
 
-        Goods_in_stock__c goodInStockTest = [SELECT id, Count_of_childs__c FROM Goods_in_stock__c WHERE id = : gis1.id LIMIT 1];
+    insert gis2;
 
-        System.assertEquals(2, goodInStockTest.Count_of_childs__c);
-    }
+    Test.startTest();
 
-    @isTest
-    public static void goodInStockBeforeUpdateTest() {
-        Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
-        Goods_in_stock__c gis = [SELECT id, ProductType__c, Date__c FROM Goods_in_stock__c LIMIT 1];
+    Consignment_note__c cn1 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis1.id,
+      Name = 'test1 ConsigmentNote'
+    );
 
-        Test.startTest();
-        
-        Consignment_note__c consigNote = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test1 ConsigmentNote');
-        insert consigNote;
+    Consignment_note__c cn2 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis1.id,
+      Name = 'test2 ConsigmentNote'
+    );
 
-        date oldDate =  gis.Date__c;
+    Consignment_note__c cn3 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis1.id,
+      Name = 'test3 ConsigmentNote'
+    );
 
-        consigNote.Name = 'test1';
-        update consigNote;
+    List<Consignment_note__c> consNotList = new List<Consignment_note__c>();
 
-        Test.stopTest();
+    consNotList.add(cn1);
+    consNotList.add(cn2);
+    consNotList.add(cn3);
 
-        system.debug('testDateOld ' + oldDate);
+    insert consNotList;
 
-        Goods_in_stock__c goodInStockTest = [SELECT id, Date__c FROM Goods_in_stock__c LIMIT 1];
+    consNotList[0].Goods_in_stock__c = null;
 
-        system.debug('testDateNew ' + goodInStockTest.Date__c);
+    update consNotList[0];
 
-        System.assertNotEquals(oldDate, goodInStockTest.Date__c );
-    }
+    Test.stopTest();
 
-    @isTest
-    public static void goodInStockAfterDeleteTest() {
-        Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
-        Goods_in_stock__c gis = [SELECT id, ProductType__c, Count_of_childs__c FROM Goods_in_stock__c LIMIT 1];
+    Goods_in_stock__c goodInStockTest = [
+      SELECT id, Count_of_childs__c
+      FROM Goods_in_stock__c
+      WHERE id = :gis1.id
+      LIMIT 1
+    ];
 
-        Consignment_note__c cn1 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test1 ConsigmentNote');
-        insert cn1;
+    System.assertEquals(2, goodInStockTest.Count_of_childs__c);
+  }
 
-        Consignment_note__c cn2 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test2 ConsigmentNote');
-        insert cn2;
+  @isTest
+  public static void goodInStockBeforeUpdateTest() {
+    Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
+    Goods_in_stock__c gis = [
+      SELECT id, ProductType__c, Date__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
 
-        Consignment_note__c cn3 = new Consignment_note__c(Employee__c=empl.id, Goods_in_stock__c=gis.id, Name='test3 ConsigmentNote');
-        insert cn3;
+    Test.startTest();
 
-        Test.startTest();
+    Consignment_note__c consigNote = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test1 ConsigmentNote'
+    );
 
-        Database.DeleteResult result = Database.delete(cn1, false);
+    insert consigNote;
 
-        Test.stopTest();
-        Goods_in_stock__c goodInStockTest = [SELECT id, Count_of_childs__c FROM Goods_in_stock__c LIMIT 1];
+    date oldDate = gis.Date__c;
 
-        System.assertEquals(2, goodInStockTest.Count_of_childs__c);
-    }
+    consigNote.Name = 'test1';
+
+    update consigNote;
+
+    Test.stopTest();
+
+    Goods_in_stock__c goodInStockTest = [
+      SELECT id, Date__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
+
+    System.assertNotEquals(oldDate, goodInStockTest.Date__c);
+  }
+
+  @isTest
+  public static void goodInStockAfterDeleteTest() {
+    Employee__c empl = [SELECT id FROM Employee__c LIMIT 1];
+    Goods_in_stock__c gis = [
+      SELECT id, ProductType__c, Count_of_childs__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
+
+    Consignment_note__c cn1 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test1 ConsigmentNote'
+    );
+
+    insert cn1;
+
+    Consignment_note__c cn2 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test2 ConsigmentNote'
+    );
+
+    insert cn2;
+
+    Consignment_note__c cn3 = new Consignment_note__c(
+      Employee__c = empl.id,
+      Goods_in_stock__c = gis.id,
+      Name = 'test3 ConsigmentNote'
+    );
+
+    insert cn3;
+
+    Test.startTest();
+
+    Database.DeleteResult result = Database.delete(cn1, false);
+
+    Test.stopTest();
+
+    Goods_in_stock__c goodInStockTest = [
+      SELECT id, Count_of_childs__c
+      FROM Goods_in_stock__c
+      LIMIT 1
+    ];
+
+    System.assertEquals(2, goodInStockTest.Count_of_childs__c);
+  }
 }
