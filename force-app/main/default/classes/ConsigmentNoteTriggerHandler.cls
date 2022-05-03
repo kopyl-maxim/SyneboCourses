@@ -1,8 +1,5 @@
 public with sharing class ConsigmentNoteTriggerHandler {
-  public static void beforeUpdate(
-    List<Consignment_note__c> newList,
-    Map<Id, Consignment_note__c> oldMap
-  ) {
+  public static void beforeUpdate(List<Consignment_note__c> newList,Map<Id, Consignment_note__c> oldMap) {
     updateGoodInStockDate(newList, oldMap);
   }
 
@@ -10,10 +7,7 @@ public with sharing class ConsigmentNoteTriggerHandler {
     countNumberOfChild(newList, null);
   }
 
-  public static void afterUpdate(
-    List<Consignment_note__c> newList,
-    Map<Id, Consignment_note__c> oldMap
-  ) {
+  public static void afterUpdate(List<Consignment_note__c> newList, Map<Id, Consignment_note__c> oldMap) {
     countNumberOfChild(newList, oldMap);
   }
 
@@ -21,10 +15,7 @@ public with sharing class ConsigmentNoteTriggerHandler {
     countNumberOfChild(null, oldMap);
   }
 
-  public static void updateGoodInStockDate(
-    List<Consignment_note__c> newList,
-    Map<Id, Consignment_note__c> oldMap
-  ) {
+  public static void updateGoodInStockDate(List<Consignment_note__c> newList, Map<Id, Consignment_note__c> oldMap) {
     Set<Id> listIds = new Set<Id>();
 
     for (Consignment_note__c cn_i : newList) {
@@ -32,11 +23,7 @@ public with sharing class ConsigmentNoteTriggerHandler {
         listIds.add(cn_i.Goods_in_stock__c);
       }
     }
-    List<Goods_in_stock__c> goodsInStockList = [
-      SELECT id
-      FROM Goods_in_stock__c
-      WHERE id IN :listIds
-    ];
+    List<Goods_in_stock__c> goodsInStockList = [SELECT id FROM Goods_in_stock__c WHERE id IN :listIds];
 
     for (Goods_in_stock__c gs_i : goodsInStockList) {
       DateTime dT = system.now();
@@ -46,10 +33,7 @@ public with sharing class ConsigmentNoteTriggerHandler {
     update goodsInStockList;
   }
 
-  private static void countNumberOfChild(
-    List<Consignment_note__c> newList,
-    Map<Id, Consignment_note__c> oldMap
-  ) {
+  private static void countNumberOfChild(List<Consignment_note__c> newList,Map<Id, Consignment_note__c> oldMap) {
     Set<Id> listIds = new Set<Id>();
 
     if (oldMap != null) {
@@ -68,15 +52,20 @@ public with sharing class ConsigmentNoteTriggerHandler {
       }
     }
 
-    List<Goods_in_stock__c> goodsInStockList = [
-      SELECT id, (SELECT id FROM Consignment_notes__r)
-      FROM Goods_in_stock__c
-      WHERE id IN :listIds
-    ];
+    List<Goods_in_stock__c> goodsInStockList = new List<Goods_in_stock__c>();
 
-    for (Goods_in_stock__c gn_i : goodsInStockList) {
-      gn_i.Count_of_childs__c = gn_i.Consignment_notes__r.size();
+    List<AggregateResult> aggList = [SELECT COUNT(id)cnt, Goods_in_stock__c FROM Consignment_note__c 
+                                    WHERE Goods_in_stock__c IN :listIds GROUP BY Goods_in_stock__c];
+                                               
+    for (AggregateResult ag_i : aggList) {
+      Goods_in_stock__c gis_ob = new Goods_in_stock__c();
+      gis_ob.id = (Id)ag_i.get('Goods_in_stock__c');
+      gis_ob.Count_of_childs__c = (Integer)ag_i.get('cnt');
+      goodsInStockList.add(gis_ob);
     }
-    update goodsInStockList;
+
+    if(goodsInStockList.size() > 0 ){
+      update goodsInStockList;
+    }
   }
 }
