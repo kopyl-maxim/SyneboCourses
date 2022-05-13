@@ -1,19 +1,23 @@
-public with sharing class AnimalsParsing {
+global with sharing class AnimalsParsing {
 
-    public AnimalsParsing(){
+    global AnimalsParsing(){
     
     }
 
-    public animal animal;
+    global animal animal;
 
-    public class animal {
-    public String id;
-    public String name;
-    public String eats;
-    public String says;
+    global class animal {
+    global String id;
+    global String name;
+    global String eats;
+    global String says;
     }
 
-    public static AnimalsParsing parse(String json) {
+    global static AnimalsParsing parse(String json) {
         return (AnimalsParsing) System.JSON.deserialize(json, AnimalsParsing.class);
+    }
+
+    public static List<animal> parseList(String json) {
+        return (List<animal>) System.JSON.deserialize(json, List<animal>.class);
     }
 }
