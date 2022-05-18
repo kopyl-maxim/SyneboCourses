@@ -1,0 +1,17 @@
+.tableBody {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 0 1rem 0 1rem;
+}
+
+.TypographyLogo {
+    color: #181818;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.popapBody {
+    background-color: white;
+}

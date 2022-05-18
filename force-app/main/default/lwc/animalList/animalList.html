@@ -1,11 +1,63 @@
 <template>
-  <lightning-card title="AnimalTable" icon-name="custom:custom63">
-      <div class="slds-m-around_medium">
-          <lightning-datatable
-              key-field="id"
-              data={data}
-              columns={columns}>
-          </lightning-datatable>
-      </div>
+  <lightning-card>
+    <div class="tableBody">
+      <div class="TypographyLogo">AnimalTable</div>
+      <div>
+      <lightning-button variant="brand" label="Create" onclick={openModal} class="slds-m-left_x-small">
+      </lightning-button>
+      <lightning-button variant="brand" label="Standart Create" onclick={navigateToNewContactWithDefaults} class="slds-m-left_x-small">
+      </lightning-button>
+    </div>
+    </div>
+    <div class="slds-m-around_medium">
+      <lightning-datatable key-field="id" data={data} columns={columns}>
+      </lightning-datatable>
+    </div>
+    <template if:true={isModalOpen}>
+      <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+              <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+              <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create new Animal</h2>
+          </header>
+          <form>
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="text-input-id-1">Id</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="text-input-id-1" placeholder="Id" onchange={animalIdChange} class="slds-input" />
+              </div>
+            </div>
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="text-input-id-2">Name</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="text-input-id-2" placeholder="Name" onchange={animalNameChange} disabled={inputDisabled} value={name} class="slds-input" />
+              </div>
+            </div>
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="text-input-id-3">Says</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="text-input-id-3" placeholder="Says" onchange={animalSaysChange} disabled={inputDisabled} value={says} class="slds-input" />
+              </div>
+            </div>
+            <div class="slds-form-element">
+              <label class="slds-form-element__label" for="text-input-id-47">Eats</label>
+              <div class="slds-form-element__control">
+                <input type="text" id="text-input-id-47" placeholder="Eats" onchange={animalEatsChange} disabled={inputDisabled} value={eats}  class="slds-input" />
+              </div>
+            </div>
+          </div>
+        </form>
+          <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+            <button class="slds-button slds-button_brand" onclick={saveAnimal} title="OK">Save</button>
+          </footer>
+        </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
   </lightning-card>
 </template>
